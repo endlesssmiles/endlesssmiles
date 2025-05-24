@@ -1,0 +1,83 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Montserrat:wght@300;400;500;600&family=Dancing+Script:wght@400;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 350 100% 98%;
+    --foreground: 350 10% 15%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 350 10% 15%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 350 10% 15%;
+
+    --primary: 350 85% 70%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 20 100% 91%;
+    --secondary-foreground: 350 10% 15%;
+
+    --muted: 350 20% 95%;
+    --muted-foreground: 350 10% 45%;
+
+    --accent: 350 60% 95%;
+    --accent-foreground: 350 10% 15%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 350 30% 90%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 350 85% 70%;
+
+    --radius: 1rem;
+
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans;
+  }
+
+  h1, h2, h3, h4, h5 {
+    @apply font-serif;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+  
+  .text-shadow {
+    text-shadow: 0 2px 4px rgba(0,0,0,0.10);
+  }
+  
+  .shadow-soft {
+    box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+  }
+  
+  .bg-soft-gradient {
+    background: linear-gradient(135deg, #FFF5F7 0%, #FDE1D3 100%);
+  }
+  
+  .bg-love-gradient {
+    background: linear-gradient(180deg, rgb(254,100,121) 0%, rgb(251,221,186) 100%);
+  }
+}
