@@ -246,17 +246,10 @@ const AnniversarySection = () => {
                   {revealMessage && (
                     <div className="animate-fade-in space-y-6">
                       <p className="text-xl text-gray-700 dark:text-gray-300 font-serif leading-relaxed">
-                        {yearsTogether} saal pehele aapne mujhe haa bola tha... aur kaafi
-                        mushkile bhi aai par still humne ek dusre ka saath nhi
-                        choda and we successfully completed our {getOrdinal(yearsTogether)} Anniversary
-                        🤩🤩
+                        ye {yearsTogether} saal kaise nikal gaye pata hei nhi chala... aisa lag raha hai ki aapse kal hei handball mai mila tha jab aap mujhe dhang se janti bhi nhi thi... aur aaj itnaaa close aa gaye hai ki aisa lagta hai ki barso se sath hai🥺🥰
                       </p>
                       <p className="text-lg text-gray-600 dark:text-gray-400 leading-relaxed">
-                        Aap hi meri sab kuch ho... and aapko kabhi chodhke nhi
-                        jaunga and aapko bhi jane nhi dunga 😤😤...aap bass meri
-                        ho samjhi 😤🥺... ye {yearsTogether} saal kaise nikal gaye pata hi
-                        nahi chala... so hope so ye {getOrdinal(yearsTogether + 1)} year humara aur bhi
-                        zyada achha jaye and koi bhi mushkile na aaye 😌🙏😘😘
+                        ye {getOrdinal(yearsTogether)} year bhi beech mai thodi mushkile aai thi but bhagwan jii haina humare sath fir kaisa dar🥰... unhone saab theek kar diya and i hope ki {getOrdinal(yearsTogether + 1)} year mai koi bhi mushkile na aaye and hum humesha aisehei khush rahe and sath rahe🥰😘😘
                       </p>
                       <div className="pt-6">
                         <div className="text-love-500 dark:text-gold-500 text-6xl md:text-7xl font-handwritten animate-heartbeat inline-block">

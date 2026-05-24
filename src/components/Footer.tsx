@@ -10,8 +10,13 @@ const Footer = () => {
       years--;
     }
     const words = ["Zero", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten", "Eleven", "Twelve"];
-    return words[years] || years;
+    return {
+      word: words[years] || years.toString(),
+      isPlural: years !== 1
+    };
   };
+
+  const yearsInfo = getYearsTogether();
 
   return (
     <footer className="py-12 px-4 bg-gradient-to-t from-love-50 to-white dark:from-purple-950 dark:to-[#1A0B2E] border-t border-love-100/50 dark:border-purple-800/50 transition-colors duration-500">
@@ -23,7 +28,7 @@ const Footer = () => {
             className="text-love-500 fill-love-500 dark:text-gold-400 dark:fill-gold-400 animate-heartbeat"
           />
           <span className="font-handwritten text-2xl text-love-500 dark:text-gold-400 text-shadow">
-            {getYearsTogether()} Years With You
+            {yearsInfo.word} {yearsInfo.isPlural ? "Years" : "Year"} With You
           </span>
           <Heart
             size={18}
