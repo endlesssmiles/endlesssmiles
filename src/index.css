@@ -47,6 +47,36 @@
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
 
+  .dark {
+    --background: 340 55% 6%; /* Velvety rich dark wine/burgundy */
+    --foreground: 345 60% 92%; /* Warm rose cream / champagne */
+
+    --card: 340 45% 9%; /* Dark warm plum-wine */
+    --card-foreground: 345 60% 92%;
+
+    --popover: 340 45% 9%;
+    --popover-foreground: 345 60% 92%;
+
+    --primary: 350 85% 70%; /* Glowing passionate rose pink #F75D77 */
+    --primary-foreground: 340 55% 6%;
+
+    --secondary: 340 35% 14%; /* Warm dark berry */
+    --secondary-foreground: 345 60% 92%;
+
+    --muted: 340 30% 11%;
+    --muted-foreground: 340 25% 72%;
+
+    --accent: 340 40% 16%;
+    --accent-foreground: 350 85% 70%;
+
+    --destructive: 0 75% 35%;
+    --destructive-foreground: 345 60% 92%;
+
+    --border: 340 35% 15%; /* Elegant translucent wine border */
+    --input: 340 35% 15%;
+    --ring: 350 85% 70%;
+  }
+
   * {
     @apply border-border;
   }
@@ -68,16 +98,115 @@
   .text-shadow {
     text-shadow: 0 2px 4px rgba(0,0,0,0.10);
   }
+
+  .text-shadow-lg {
+    text-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  }
   
   .shadow-soft {
     box-shadow: 0 4px 20px rgba(0,0,0,0.05);
   }
+
+  .shadow-premium {
+    box-shadow: 0 8px 40px rgba(247, 93, 119, 0.12), 0 2px 12px rgba(0,0,0,0.04);
+  }
+
+  .shadow-glow {
+    box-shadow: 0 0 20px rgba(247, 93, 119, 0.3), 0 0 60px rgba(247, 93, 119, 0.1);
+  }
   
   .bg-soft-gradient {
-    background: linear-gradient(135deg, #FFF5F7 0%, #FDE1D3 100%);
+    @apply bg-gradient-to-br from-love-50 via-white to-love-100 dark:from-purple-900 dark:via-purple-800 dark:to-purple-900;
   }
   
   .bg-love-gradient {
     background: linear-gradient(180deg, rgb(254,100,121) 0%, rgb(251,221,186) 100%);
   }
+
+  .bg-hero-gradient {
+    @apply bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-love-100 via-white to-love-50 dark:from-purple-800 dark:via-purple-900 dark:to-purple-950;
+  }
+
+  .bg-section-alt {
+    @apply bg-gradient-to-b from-white via-love-50/50 to-love-50 dark:from-purple-900 dark:via-purple-950 dark:to-purple-950;
+  }
+
+  .glass {
+    @apply bg-white/70 backdrop-blur-[16px] border border-white/40 dark:bg-purple-950/40 dark:border-purple-800/20 dark:shadow-[0_4px_30px_rgba(0,0,0,0.5)];
+  }
+
+  .glass-strong {
+    @apply bg-white/85 backdrop-blur-[24px] border border-white/40 shadow-[0_8px_32px_0_rgba(247,93,119,0.1)] dark:bg-purple-900/60 dark:border-purple-800/40 dark:shadow-[0_8px_32px_0_rgba(0,0,0,0.6)];
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #FFF5F7;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #FDC8D0;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #F75D77;
+}
+
+/* Gradient animation */
+@keyframes gradient-shift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Sparkle effect for special elements */
+@keyframes sparkle {
+  0%, 100% { opacity: 0; transform: scale(0); }
+  50% { opacity: 1; transform: scale(1); }
+}
+
+/* Smooth section reveal */
+section {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
+/* Rising hearts animation — floats from bottom to top with gentle horizontal sway */
+@keyframes heart-rise {
+  0% {
+    transform: translateY(100vh) translateX(0) scale(0.6) rotate(0deg);
+    opacity: 0;
+  }
+  5% {
+    opacity: var(--heart-opacity, 0.12);
+  }
+  25% {
+    transform: translateY(50vh) translateX(var(--heart-drift, 20px)) scale(1) rotate(10deg);
+  }
+  50% {
+    transform: translateY(0vh) translateX(calc(var(--heart-drift, 20px) * -0.5)) scale(0.9) rotate(-5deg);
+  }
+  75% {
+    transform: translateY(-50vh) translateX(var(--heart-drift, 20px)) scale(1.05) rotate(8deg);
+  }
+  95% {
+    opacity: var(--heart-opacity, 0.12);
+  }
+  100% {
+    transform: translateY(-110vh) translateX(0) scale(0.6) rotate(0deg);
+    opacity: 0;
+  }
+}
+
+.heart-rise {
+  animation: heart-rise linear infinite;
+  animation-fill-mode: both;
+  will-change: transform, opacity;
 }

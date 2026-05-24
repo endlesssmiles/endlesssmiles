@@ -1,14 +1,14 @@
 import { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { ChevronDown, ChevronUp, Heart, Plus, Trash } from "lucide-react";
+import FloatingHearts from "./FloatingHearts";
 import {
-  supabase,
-  mapFuturePlans,
-  updateFuturePlan,
-  insertFuturePlan,
+  getFuturePlans,
+  addFuturePlan,
+  updateFuturePlanStatus,
   deleteFuturePlan,
-} from "@/integrations/supabase/client";
-import { FuturePlan, FuturePlanInsert } from "@/types/supabase";
+} from "@/lib/firebaseDB";
+import { FuturePlan } from "@/types/supabase";
 import { toast } from "@/components/ui/use-toast";
 import {
   Dialog,
@@ -60,16 +60,8 @@ const FutureSection = () => {
   const fetchFuturePlans = async () => {
     try {
       setLoading(true);
-      const { data, error } = await supabase.from("future_plans").select("*");
-
-      if (error) {
-        throw error;
-      }
-
-      if (data) {
-        // Use the mapping function to convert database types to our custom types
-        setPlans(mapFuturePlans(data));
-      }
+      const data = await getFuturePlans();
+      setPlans(data);
     } catch (error) {
       console.error("Error fetching future plans:", error);
       toast({
@@ -84,28 +76,20 @@ const FutureSection = () => {
 
   const togglePlanStatus = async (id: string, currentStatus: boolean) => {
     try {
-      const { error } = await updateFuturePlan(id, !currentStatus);
-
-      if (error) {
-        throw error;
-      }
-
-      // Update local state
+      await updateFuturePlanStatus(id, !currentStatus);
       setPlans((prev) =>
         prev.map((plan) =>
-          plan.id === id ? { ...plan, completed: !currentStatus } : plan
-        )
+          plan.id === id ? { ...plan, completed: !currentStatus } : plan,
+        ),
       );
-
       toast({
-        title: !currentStatus ? "Dream achieved!" : "Dream reset",
+        title: !currentStatus ? "Dream achieved! 🎉" : "Dream reset",
         description: !currentStatus
           ? "Congratulations on accomplishing this dream!"
           : "You can accomplish this again!",
-        variant: "default",
       });
     } catch (error) {
-      console.error("Error updating plan status:", error);
+      console.error("Error updating plan:", error);
       toast({
         title: "Error updating plan",
         description: "Please try again later.",
@@ -115,34 +99,23 @@ const FutureSection = () => {
   };
 
   const handleDeleteClick = (e: React.MouseEvent, plan: FuturePlan) => {
-    e.stopPropagation(); // Prevent toggling the plan status
+    e.stopPropagation();
     setDreamToDelete(plan);
     setIsDeleteDialogOpen(true);
   };
 
   const handleDeleteDream = async () => {
     if (!dreamToDelete) return;
-
     try {
       setIsSubmitting(true);
-
-      const { error } = await deleteFuturePlan(dreamToDelete.id);
-
-      if (error) {
-        throw error;
-      }
-
+      await deleteFuturePlan(dreamToDelete.id);
       toast({
         title: "Dream removed",
         description: "Your future dream has been removed.",
       });
-
-      // Close delete dialog
       setIsDeleteDialogOpen(false);
       setDreamToDelete(null);
-
-      // Refresh plans
-      fetchFuturePlans();
+      await fetchFuturePlans();
     } catch (error) {
       console.error("Error deleting dream:", error);
       toast({
@@ -155,17 +128,8 @@ const FutureSection = () => {
     }
   };
 
-  const handleAddDream = () => {
-    setNewDream({ title: "", description: "", icon: "✨" });
-    setIsAddModalOpen(true);
-  };
-
-  const closeModal = () => {
-    setIsAddModalOpen(false);
-  };
-
   const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
     const { name, value } = e.target;
     setNewDream((prev) => ({ ...prev, [name]: value }));
@@ -185,30 +149,20 @@ const FutureSection = () => {
 
     try {
       setIsSubmitting(true);
-
-      const newDreamData: FuturePlanInsert = {
+      await addFuturePlan({
         title: newDream.title,
         description: newDream.description,
         icon: newDream.icon,
         completed: false,
-      };
-
-      const { error } = await insertFuturePlan(newDreamData);
-
-      if (error) {
-        throw error;
-      }
-
-      toast({
-        title: "Dream added!",
-        description: "Your future dream has been added.",
       });
 
-      // Refresh the plans
-      fetchFuturePlans();
-
-      // Close the modal
-      closeModal();
+      toast({
+        title: "Dream added! ✨",
+        description: "Your future dream has been saved.",
+      });
+      setNewDream({ title: "", description: "", icon: "✨" });
+      setIsAddModalOpen(false);
+      await fetchFuturePlans();
     } catch (error) {
       console.error("Error adding dream:", error);
       toast({
@@ -221,7 +175,6 @@ const FutureSection = () => {
     }
   };
 
-  // Show loading state
   if (loading) {
     return (
       <section id="future" className="py-20 px-4 bg-love-50">
@@ -236,26 +189,26 @@ const FutureSection = () => {
   }
 
   return (
-    <section id="future" className="py-20 px-4 bg-love-50">
-      <div className="container mx-auto">
+    <section id="future" className="relative py-20 px-4 bg-love-50 dark:bg-purple-950 transition-colors duration-500 overflow-hidden">
+      <div className="container relative z-10 mx-auto">
         <Collapsible
           open={isExpanded}
           onOpenChange={setIsExpanded}
           className="w-full"
         >
-          <div className="flex items-center justify-center mb-8">
-            <h2 className="text-4xl md:text-5xl font-serif font-bold text-center text-love-600">
+          <div className="flex flex-col sm:flex-row items-center justify-center mb-8 gap-3 sm:gap-4">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-serif font-bold text-center text-love-600 dark:text-gold-400 text-shadow">
               Our Future Together
             </h2>
-            <CollapsibleTrigger className="ml-4 p-2 rounded-full hover:bg-love-100 transition-all duration-300">
+            <CollapsibleTrigger className="p-2 rounded-full hover:bg-love-100 transition-all duration-300">
               <motion.div
                 animate={{ rotate: isExpanded ? 180 : 0 }}
                 transition={{ duration: 0.3 }}
               >
                 {isExpanded ? (
-                  <ChevronUp className="text-love-500" />
+                  <ChevronUp className="text-love-500 dark:text-gold-400" />
                 ) : (
-                  <ChevronDown className="text-love-500" />
+                  <ChevronDown className="text-love-500 dark:text-gold-400" />
                 )}
               </motion.div>
             </CollapsibleTrigger>
@@ -267,7 +220,7 @@ const FutureSection = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4 }}
             >
-              <p className="text-center text-gray-600 mb-16 max-w-2xl mx-auto">
+              <p className="text-center text-gray-600 dark:text-gray-400 mb-16 max-w-2xl mx-auto">
                 Kuch Sapne, Kuch Khwaab... Jo sathmae dekhenge aur sathmae poora
                 karenge🥳
               </p>
@@ -278,7 +231,7 @@ const FutureSection = () => {
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
-                    className="text-center text-gray-600 mb-16"
+                    className="text-center text-gray-600 dark:text-gray-400 mb-16"
                   >
                     No dreams added yet. Start planning your future together!
                   </motion.div>
@@ -299,11 +252,11 @@ const FutureSection = () => {
                         transition={{ duration: 0.3 }}
                       >
                         <Card
-                          className={`border transition-all duration-300 cursor-pointer ${
+                          className={`border-0 sm:border transition-all duration-300 cursor-pointer ${
                             plan.completed
-                              ? "bg-love-100 border-love-300"
-                              : "bg-white border-love-100"
-                          } hover:shadow-md relative`}
+                              ? "bg-love-100 dark:bg-purple-800 sm:border-love-300 sm:dark:border-gold-500/50"
+                              : "bg-white dark:bg-purple-900 sm:border-love-100 sm:dark:border-purple-800"
+                          } shadow-sm sm:shadow-md hover:shadow-lg relative`}
                         >
                           <CardContent className="p-6 flex items-start">
                             <div className="text-4xl mr-4">{plan.icon}</div>
@@ -314,23 +267,23 @@ const FutureSection = () => {
                                   togglePlanStatus(plan.id, plan.completed)
                                 }
                               >
-                                <h3 className="font-serif font-bold text-lg text-gray-800 flex items-center">
+                                <h3 className="font-serif font-bold text-lg text-gray-800 dark:text-gold-100 flex items-center">
                                   {plan.title}
                                   {plan.completed && (
                                     <Heart
                                       size={16}
-                                      className="ml-2 text-love-500 fill-love-500"
+                                      className="ml-2 text-love-500 fill-love-500 dark:text-gold-400 dark:fill-gold-400"
                                     />
                                   )}
                                 </h3>
-                                <p className="text-gray-600 mt-2">
+                                <p className="text-gray-600 dark:text-gray-300 mt-2">
                                   {plan.description}
                                 </p>
                               </div>
                             </div>
                             <button
                               onClick={(e) => handleDeleteClick(e, plan)}
-                              className="text-gray-400 hover:text-rose-500 transition-colors ml-2"
+                              className="text-gray-400 dark:text-gray-500 hover:text-rose-500 dark:hover:text-red-400 transition-colors ml-2"
                               aria-label="Delete dream"
                             >
                               <Trash size={18} />
@@ -353,13 +306,16 @@ const FutureSection = () => {
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                 >
-                  <Button
-                    onClick={handleAddDream}
-                    className="bg-white px-6 py-3 rounded-full border border-love-200 text-love-600 hover:bg-love-50 transition-colors shadow-sm hover:shadow flex items-center justify-center mx-auto space-x-2"
-                  >
-                    <Plus size={16} />
-                    <span>Add New Dream</span>
-                  </Button>
+                <button
+                  onClick={() => {
+                    setNewDream({ title: "", description: "", icon: "✨" });
+                    setIsAddModalOpen(true);
+                  }}
+                  className="bg-white dark:bg-purple-900/60 px-6 py-3 rounded-full border border-love-200 dark:border-purple-800 text-love-600 dark:text-gold-400 hover:bg-love-50 dark:hover:bg-purple-800 transition-colors duration-300 shadow-sm hover:shadow flex items-center justify-center mx-auto space-x-2"
+                >
+                  <Plus size={16} />
+                  <span>Add A Dream</span>
+                </button>
                 </motion.div>
               </motion.div>
             </motion.div>
@@ -435,7 +391,7 @@ const FutureSection = () => {
               <Button
                 type="button"
                 variant="outline"
-                onClick={closeModal}
+                onClick={() => setIsAddModalOpen(false)}
                 disabled={isSubmitting}
               >
                 Cancel
@@ -452,7 +408,7 @@ const FutureSection = () => {
         </DialogContent>
       </Dialog>
 
-      {/* Delete Dream Confirmation Dialog */}
+      {/* Delete Dialog */}
       <AlertDialog
         open={isDeleteDialogOpen}
         onOpenChange={setIsDeleteDialogOpen}
@@ -471,7 +427,7 @@ const FutureSection = () => {
             </AlertDialogCancel>
             <AlertDialogAction
               onClick={handleDeleteDream}
-              className="bg-rose-500 hover:bg-rose-600 transition-colors duration-300"
+              className="bg-rose-500 hover:bg-rose-600"
               disabled={isSubmitting}
             >
               {isSubmitting ? "Deleting..." : "Delete"}

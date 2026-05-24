@@ -5,6 +5,7 @@ export interface TimelineEvent {
   date: string;
   description: string;
   image_url: string;
+  year_section?: string;
   created_at?: string;
 }
 
