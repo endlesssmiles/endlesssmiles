@@ -26,7 +26,7 @@ const App = () => {
 
   return (
     <div 
-      className="flex items-center justify-center min-h-screen bg-black overflow-hidden cursor-pointer"
+      className="flex flex-col items-center justify-center min-h-screen bg-black overflow-hidden cursor-pointer"
       onClick={handleInteract}
     >
       <audio ref={audioRef} src="/fuckoff.mp3" autoPlay loop />
@@ -39,6 +39,10 @@ const App = () => {
       >
         FUCK OFF!!!
       </div>
+
+      <p className="text-white/40 text-xs md:text-sm tracking-widest uppercase font-mono mt-12 animate-pulse">
+        [ Click anywhere for sound ]
+      </p>
     </div>
   );
 };
