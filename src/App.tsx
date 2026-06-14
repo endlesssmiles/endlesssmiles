@@ -29,7 +29,7 @@ const App = () => {
       className="flex items-center justify-center min-h-screen bg-black overflow-hidden cursor-pointer"
       onClick={handleInteract}
     >
-      <audio ref={audioRef} src="/fuckoff.mp3" loop />
+      <audio ref={audioRef} src="/fuckoff.mp3" autoPlay loop />
       
       <div 
         className="text-red-500 font-black text-6xl md:text-9xl tracking-widest animate-pulse transition-transform duration-300 hover:scale-110" 
