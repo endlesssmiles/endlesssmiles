@@ -41,7 +41,7 @@ const App = () => {
       </div>
 
       <p className="text-white/40 text-xs md:text-sm tracking-widest uppercase font-mono mt-12 animate-pulse">
-        [ Click anywhere for sound ]
+        click it
       </p>
     </div>
   );
